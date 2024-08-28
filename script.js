@@ -5,11 +5,13 @@ const data = {
 		{ id: 3, name: "OEM-FW" },
 		{ id: 4, name: "OEM-HW" },
 		{ id: 5, name: "OEM-SW" },
-		{ id: 6, name: "OEM-PV" },
+		{ id: 6, name: "OEM-PFV" },
 		{ id: 7, name: "RDC-3A" },
 		{ id: 8, name: "RDC-VP" },
 		{ id: 9, name: "RDC-AI" },
 		{ id: 10, name: "RDC-ME" },
+		{ id: 11, name: "RDC-PQV" },
+		{ id: 12, name: "PROCUREMENT" },
 	],
 	links: [
 		{ source: 1, target: 2 },
@@ -21,6 +23,8 @@ const data = {
 		{ source: 1, target: 8 },
 		{ source: 1, target: 9 },
 		{ source: 1, target: 10 },
+		{ source: 1, target: 11 },
+		{ source: 1, target: 12 },
 		{ source: 2, target: 3 },
 		{ source: 2, target: 4 },
 		{ source: 2, target: 5 },
@@ -29,6 +33,8 @@ const data = {
 		{ source: 2, target: 8 },
 		{ source: 2, target: 9 },
 		{ source: 2, target: 10 },
+		{ source: 2, target: 11 },
+		{ source: 2, target: 12 },
 		{ source: 3, target: 4 },
 		{ source: 3, target: 5 },
 		{ source: 3, target: 6 },
@@ -37,6 +43,8 @@ const data = {
 		{ source: 3, target: 9 },
 		{ source: 4, target: 6 },
 		{ source: 4, target: 10 },
+		{ source: 4, target: 11 },
+		{ source: 4, target: 12 },
 		{ source: 5, target: 6 },
 		{ source: 6, target: 7 },
 		{ source: 6, target: 8 },
@@ -50,11 +58,13 @@ const colorMap = {
 	"OEM-FW": "#ff3399",
 	"OEM-HW": "#33cc33",
 	"OEM-SW": "#9966ff",
-	"OEM-PV": "#ff6600",
+	"OEM-PFV": "#ff6600",
 	"RDC-3A": "#ff0000",
 	"RDC-VP": "#00ff00",
 	"RDC-AI": "#0055ff",
 	"RDC-ME": "#ffff00",
+	"RDC-PQV": "#ff00ff",
+	"PROCUREMENT": "#00ffff",
 };
 
 const svg = d3.select("#graph");
@@ -79,7 +89,7 @@ window.addEventListener("resize", () => {
 });
 
 // 計算基礎圓圈半徑
-const baseRadius = 20;
+const baseRadius = 10;
 
 // 創建一個臨時的 SVG 文本元素來測量文本寬度
 const tempText = svg.append("text").attr("visibility", "hidden");
@@ -92,13 +102,13 @@ const maxTextWidth = d3.max(data.nodes, (d) => {
 
 // 移除臨時文本元素
 if (tempText) {
-    tempText.remove();
+	tempText.remove();
 } else {
-    console.error("tempText is not defined or does not exist.");
+	console.error("tempText is not defined or does not exist.");
 }
 
 // 計算圓圈半徑，確保最長的文本能夠容納在圓圈內
-const circleRadius = Math.max(baseRadius, maxTextWidth / 2 + 10); // 加10作為內邊距
+const circleRadius = Math.max(baseRadius, maxTextWidth / 2 + 5); // 加10作為內邊距
 // 根據圓圈半徑計算適當的排斥力和連接距離
 const repulsionStrength = -100 * circleRadius; // 排斥力與圓圈半徑成正比
 const linkDistance = circleRadius * 4; // 連接距離為圓圈直徑的兩倍
@@ -145,7 +155,9 @@ node.append("circle")
 node.append("text")
 	.text((d) => d.name)
 	.attr("text-anchor", "middle")
-	.attr("dy", ".35em");
+	.attr("dy", ".35em")
+	.style("font-family", "Arial, sans-serif") // 設置字體
+	.style("font-weight", "bold"); // 設置粗體
 
 let selectedNode = null;
 
